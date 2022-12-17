@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface ReceiptService {
 
-    ReceiptResponseDto generateReceipt(List<String> item, String cardNumber);
+    ReceiptResponseDto generateReceipt(List<String> items, String cardNumber);
 }

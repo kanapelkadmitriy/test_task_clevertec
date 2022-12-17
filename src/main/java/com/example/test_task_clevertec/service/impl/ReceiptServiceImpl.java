@@ -19,8 +19,8 @@ public class ReceiptServiceImpl implements ReceiptService {
     private final ReceiptDataValidatorService receiptDataValidatorService;
 
     @Override
-    public ReceiptResponseDto generateReceipt(List<String> item, String cardNumber) {
-        receiptDataValidatorService.validate(item, cardNumber);
+    public ReceiptResponseDto generateReceipt(List<String> items, String cardNumber) {
+        receiptDataValidatorService.validate(items, cardNumber);
 
 //        for (String it : item) {
 //            int separatorIndex = it.indexOf("-");

@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface ReceiptDataValidatorService {
 
-    void validate(List<String> item, String cardNumber);
+    void validate(List<String> items, String cardNumber);
 }

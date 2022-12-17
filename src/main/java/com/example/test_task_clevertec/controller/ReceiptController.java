@@ -18,8 +18,8 @@ public class ReceiptController {
     private final ReceiptService receiptService;
 
     @GetMapping("/generate")
-    public ReceiptResponseDto generateReceipt(@RequestParam(value = "item", required = false) List<String> item,
+    public ReceiptResponseDto generateReceipt(@RequestParam(value = "item", required = false) List<String> items,
                                               @RequestParam(value = "card_number", required = false) String cardNumber) {
-        return receiptService.generateReceipt(item, cardNumber);
+        return receiptService.generateReceipt(items, cardNumber);
     }
 }

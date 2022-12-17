@@ -13,8 +13,8 @@ public class ReceiptDataValidatorServiceImpl implements ReceiptDataValidatorServ
     private static final Pattern CARD_PATTERN = Pattern.compile("card-\\d{4}", Pattern.CASE_INSENSITIVE);
 
     @Override
-    public void validate(List<String> item, String cardNumber) {
-        if (item == null || item.isEmpty()) {
+    public void validate(List<String> items, String cardNumber) {
+        if (items == null || items.isEmpty()) {
             throw new BusinessException("wasn't received data for receipt generation");
         }
 
@@ -22,7 +22,7 @@ public class ReceiptDataValidatorServiceImpl implements ReceiptDataValidatorServ
             throw new BusinessException(String.format("invalid card number: %s", cardNumber));
         }
 
-        for (String it : item) {
+        for (String it : items) {
             if (!ITEM_PATTERN.matcher(it).matches()){
                 throw new BusinessException(String.format("invalid value for receipt: %s", it));
             }
