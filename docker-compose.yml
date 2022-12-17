@@ -1,0 +1,11 @@
+version: '3.7'
+
+services:
+  postgres:
+    image: postgres:13.2
+    environment:
+      - POSTGRES_DB=receipt
+      - POSTGRES_USER=db-user
+      - POSTGRES_PASSWORD=db-password
+    ports:
+      - "5432:5432"
