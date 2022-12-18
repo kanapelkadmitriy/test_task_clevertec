@@ -22,10 +22,10 @@ public class ReceiptDataValidatorServiceImpl implements ReceiptDataValidatorServ
             throw new BusinessException(String.format("invalid card number: %s", cardNumber));
         }
 
-        for (String it : items) {
-            if (!ITEM_PATTERN.matcher(it).matches()){
-                throw new BusinessException(String.format("invalid value for receipt: %s", it));
+        items.forEach(item -> {
+            if (!ITEM_PATTERN.matcher(item).matches()){
+                throw new BusinessException(String.format("invalid value for receipt: %s", item));
             }
-        }
+        });
     }
 }

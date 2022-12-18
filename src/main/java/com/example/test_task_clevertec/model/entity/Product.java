@@ -5,8 +5,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -14,6 +17,9 @@ import java.math.BigDecimal;
 @Entity
 @Data
 @Builder
+@Table(name = "product")
+@AllArgsConstructor
+@NoArgsConstructor
 public class Product implements Serializable {
 
     @Id
