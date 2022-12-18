@@ -9,8 +9,8 @@ import java.util.regex.Pattern;
 
 @Service
 public class ReceiptDataValidatorServiceImpl implements ReceiptDataValidatorService {
-    private static final Pattern ITEM_PATTERN = Pattern.compile("\\d+-\\d+");
-    private static final Pattern CARD_PATTERN = Pattern.compile("card-\\d{4}", Pattern.CASE_INSENSITIVE);
+    public static final Pattern ITEM_PATTERN = Pattern.compile("\\d+-\\d+");
+    public static final Pattern CARD_PATTERN = Pattern.compile("card-\\d{4}", Pattern.CASE_INSENSITIVE);
 
     @Override
     public void validate(List<String> items, String cardNumber) {

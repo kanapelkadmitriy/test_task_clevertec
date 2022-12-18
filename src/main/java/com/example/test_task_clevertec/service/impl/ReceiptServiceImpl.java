@@ -1,15 +1,18 @@
 package com.example.test_task_clevertec.service.impl;
 
 import com.example.test_task_clevertec.model.dto.ProductReceiptDto;
+import com.example.test_task_clevertec.model.dto.ReceiptRequestDto;
 import com.example.test_task_clevertec.model.dto.ReceiptResponseDto;
 import com.example.test_task_clevertec.model.entity.Product;
 import com.example.test_task_clevertec.service.CardService;
+import com.example.test_task_clevertec.service.FileParserService;
 import com.example.test_task_clevertec.service.ProductParser;
 import com.example.test_task_clevertec.service.ProductService;
 import com.example.test_task_clevertec.service.ReceiptDataValidatorService;
 import com.example.test_task_clevertec.service.ReceiptService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -25,14 +28,21 @@ public class ReceiptServiceImpl implements ReceiptService {
     private final CardService cardService;
     private final ReceiptDataValidatorService receiptDataValidatorService;
     private final ProductParser productParser;
+    private final FileParserService parserService;
+
+    @Override
+    public ReceiptResponseDto generateReceiptFromFile(MultipartFile file) {
+        final ReceiptRequestDto receiptRequest = parserService.parse(file);
+        return generateReceipt(receiptRequest.getItems(), receiptRequest.getCardNumber());
+    }
 
     @Override
     public ReceiptResponseDto generateReceipt(List<String> items, String cardNumber) {
         receiptDataValidatorService.validate(items, cardNumber);
         final Map<Long, Integer> productItems = productParser.parse(items);
-        Integer discountValue = cardNumber == null
-                ? 0
-                : cardService.findByCardNumber(cardNumber).getDiscount();
+        BigDecimal discountValue = cardNumber == null
+                ? BigDecimal.ZERO
+                : BigDecimal.valueOf(cardService.findByCardNumber(cardNumber).getDiscount());
 
         final List<ProductReceiptDto> productReceiptDtoList = new ArrayList<>();
 
@@ -54,7 +64,7 @@ public class ReceiptServiceImpl implements ReceiptService {
                 .get();
 
         final BigDecimal totalDiscount = totalSum
-                .multiply(BigDecimal.valueOf(discountValue))
+                .multiply(discountValue)
                 .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
 
         final BigDecimal total = totalSum.subtract(totalDiscount);
@@ -63,7 +73,7 @@ public class ReceiptServiceImpl implements ReceiptService {
                 .receiptNumber("random_receipt_name")
                 .products(productReceiptDtoList)
                 .totalSum(totalSum)
-                .totalDiscount(discountValue)
+                .totalDiscount(discountValue.intValue())
                 .total(total)
                 .build();
     }
