@@ -10,15 +10,19 @@ import com.example.test_task_clevertec.service.ProductParser;
 import com.example.test_task_clevertec.service.ProductService;
 import com.example.test_task_clevertec.service.ReceiptDataValidatorService;
 import com.example.test_task_clevertec.service.ReceiptService;
+import com.example.test_task_clevertec.service.ReceiptWriterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +33,7 @@ public class ReceiptServiceImpl implements ReceiptService {
     private final ReceiptDataValidatorService receiptDataValidatorService;
     private final ProductParser productParser;
     private final FileParserService parserService;
+    private final ReceiptWriterService writerService;
 
     @Override
     public ReceiptResponseDto generateReceiptFromFile(MultipartFile file) {
@@ -61,7 +66,7 @@ public class ReceiptServiceImpl implements ReceiptService {
                 .stream()
                 .map(ProductReceiptDto::getTotal)
                 .reduce(BigDecimal::add)
-                .get();
+                .orElse(BigDecimal.ZERO);
 
         final BigDecimal totalDiscount = totalSum
                 .multiply(discountValue)
@@ -69,16 +74,22 @@ public class ReceiptServiceImpl implements ReceiptService {
 
         final BigDecimal total = totalSum.subtract(totalDiscount);
 
-        return ReceiptResponseDto.builder()
-                .receiptNumber("random_receipt_name")
+        final ReceiptResponseDto receiptResponse = ReceiptResponseDto.builder()
+                .receiptNumber(UUID.randomUUID().toString())
+                .date(LocalDate.now())
+                .time(LocalTime.now())
                 .products(productReceiptDtoList)
                 .totalSum(totalSum)
                 .totalDiscount(discountValue.intValue())
+                .discountSum(totalDiscount)
                 .total(total)
                 .build();
+
+        writerService.write(receiptResponse);
+        return receiptResponse;
     }
 
-    private BigDecimal getTotalPrice(BigDecimal price, Integer quantity, boolean isDiscounted) {
+    public BigDecimal getTotalPrice(BigDecimal price, Integer quantity, boolean isDiscounted) {
         final BigDecimal discount = isDiscounted && quantity > 5
                 ? BigDecimal.valueOf(10)
                 : BigDecimal.ZERO;

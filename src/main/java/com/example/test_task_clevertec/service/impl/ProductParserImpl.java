@@ -17,7 +17,7 @@ public class ProductParserImpl implements ProductParser {
         final Map<Long, Integer> productItems = new HashMap<>();
         for (String item : items) {
             int separatorIndex = item.indexOf(SEPARATOR);
-            final Long productId = Long.valueOf(item.substring(0, separatorIndex));
+            final Long productId = Long.parseLong(item.substring(0, separatorIndex));
             final Integer quantity = Integer.valueOf(item.substring(separatorIndex + 1));
             productItems.put(productId, quantity);
         }
