@@ -37,13 +37,17 @@ public class CardServiceTest extends IntegrationTest {
 
     private static Stream<Arguments> provideSuccessfulCardData() {
         return Stream.of(
-                Arguments.of(Card.builder().number("Card-1234").discount(5).build(), "Card-1234")
+                Arguments.of(Card.builder().number("Card-1234").discount(5).build(), "Card-1234"),
+                Arguments.of(Card.builder().number("Card-1235").discount(5).build(), "Card-1235"),
+                Arguments.of(Card.builder().number("Card-1244").discount(5).build(), "Card-1244")
         );
     }
 
     private static Stream<Arguments> provideUnsuccessfulCardData() {
         return Stream.of(
-                Arguments.of(Card.builder().number("Card-1234").discount(5).build(), "Card-1235")
+                Arguments.of(Card.builder().number("Card-1234").discount(5).build(), "Card-1235"),
+                Arguments.of(Card.builder().number("Card-1233").discount(5).build(), "Card-1234"),
+                Arguments.of(Card.builder().number("Card-1232").discount(5).build(), "Card-1237")
         );
     }
 }
