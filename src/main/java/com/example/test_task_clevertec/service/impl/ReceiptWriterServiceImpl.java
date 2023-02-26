@@ -40,7 +40,7 @@ public class ReceiptWriterServiceImpl implements ReceiptWriterService {
         }
     }
 
-    List<String> generateReceiptData(ReceiptResponseDto receiptResponse) {
+    private List<String> generateReceiptData(ReceiptResponseDto receiptResponse) {
         final List<String> receiptData = new ArrayList<>();
         String title = QTY_TITLE +
                 getLineBySymbol(SPACE_SYMBOL, SPACE.length()) +

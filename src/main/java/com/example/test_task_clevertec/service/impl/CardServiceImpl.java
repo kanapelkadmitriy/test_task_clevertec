@@ -16,6 +16,6 @@ public class CardServiceImpl implements CardService {
     @Override
     public Card findByCardNumber(String cardNumber) {
         return cardRepository.findByCardNumber(cardNumber)
-                .orElseThrow(() -> new BusinessException(String.format("card with number %s not fouond", cardNumber)));
+                .orElseThrow(() -> new BusinessException(String.format("card with number %s not found", cardNumber)));
     }
 }
