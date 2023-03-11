@@ -37,4 +37,7 @@ public class Product implements Serializable {
 
     @Column(name = "is_discounted")
     private boolean isDiscounted;
+
+    @Column(name = "vendor_code")
+    private String vendorCode;
 }
