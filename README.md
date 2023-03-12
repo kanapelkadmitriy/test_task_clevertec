@@ -22,3 +22,16 @@
 
     2. В случае передачи некорректных данных пробрасывается BusinessException
     3. При выполнении запроса возвращается JSON с чеком и создаётся .txt файл с чеком в папке ./receipt
+   
+5) Добавлен функционал кэширования CRUD операций. Настройки кэширования находятся в файле application.yml
+   cache:
+     is_active: true (включение/выключение кэширования)
+     capacity: 10 (размер кэша)
+      
+   * Для кэширования конкретной операции над методом в контроллере нужно поставить аннотацию @Cacheable 
+     с указанием класса entity (@Cacheable(type = Product.class))
+   * В классе CacheConfig создать бин класса LRUCache<?>, для конкретного энтити:
+     @Bean
+     public LRUCache<Product> productLRUCache() {
+         return new LRUCache<>(cacheProperty.getCapacity(), Product.class);
+     }
