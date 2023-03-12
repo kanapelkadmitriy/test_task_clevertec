@@ -57,7 +57,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductDto updateProduct(Long id, ProductDto productDto) {
         validateVendorCode(productDto.getVendorCode());
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(String.format("product with id %s not fouond", id)));
+                .orElseThrow(() -> new BusinessException(String.format("product with id %s not found", id)));
         product.setVendorCode(product.getVendorCode());
         product.setDescription(productDto.getDescription());
         product.setDiscounted(productDto.isDiscounted());

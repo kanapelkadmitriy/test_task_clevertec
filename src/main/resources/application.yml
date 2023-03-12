@@ -17,4 +17,7 @@ spring:
         show_sql: false
     show-sql: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+cache:
+  is_able: true
+  capacity: 10
 
