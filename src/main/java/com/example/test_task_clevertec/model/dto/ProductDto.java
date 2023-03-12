@@ -9,13 +9,10 @@ import java.math.BigDecimal;
 @Builder
 public class ProductDto {
 
+    private Long id;
     private String description;
-
     private BigDecimal price;
-
     private int quantity;
-
     private boolean isDiscounted;
-
     private String vendorCode;
 }

@@ -1,5 +1,6 @@
 package com.example.test_task_clevertec.service.impl;
 
+import com.example.test_task_clevertec.aop.Cacheable;
 import com.example.test_task_clevertec.exceptions.BusinessException;
 import com.example.test_task_clevertec.model.dto.ProductDto;
 import com.example.test_task_clevertec.model.entity.Product;
@@ -25,11 +26,13 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new BusinessException(String.format("product with id %s not fouond", id)));
     }
 
+//    @Cacheable(type = Product.class)
     @Override
     public ProductDto getById(Long id) {
         final Product product = productRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(String.format("product with id %s not fouond", id)));
         return ProductDto.builder()
+                .id(product.getId())
                 .vendorCode(product.getVendorCode())
                 .quantity(product.getQuantity())
                 .price(product.getPrice())
@@ -49,7 +52,8 @@ public class ProductServiceImpl implements ProductService {
                 .price(productDto.getPrice())
                 .quantity(productDto.getQuantity())
                 .build();
-        productRepository.save(product);
+        Product savedProduct = productRepository.save(product);
+        productDto.setId(savedProduct.getId());
         return productDto;
     }
     @Transactional
@@ -58,12 +62,13 @@ public class ProductServiceImpl implements ProductService {
         validateVendorCode(productDto.getVendorCode());
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(String.format("product with id %s not found", id)));
-        product.setVendorCode(product.getVendorCode());
+        product.setVendorCode(productDto.getVendorCode());
         product.setDescription(productDto.getDescription());
         product.setDiscounted(productDto.isDiscounted());
         product.setPrice(productDto.getPrice());
         product.setQuantity(productDto.getQuantity());
         productRepository.save(product);
+        productDto.setId(id);
         return productDto;
     }
     @Transactional

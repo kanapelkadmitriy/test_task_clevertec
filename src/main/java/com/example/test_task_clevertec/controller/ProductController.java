@@ -1,5 +1,6 @@
 package com.example.test_task_clevertec.controller;
 
+import com.example.test_task_clevertec.aop.Cacheable;
 import com.example.test_task_clevertec.model.dto.ProductDto;
 import com.example.test_task_clevertec.model.entity.Product;
 import com.example.test_task_clevertec.service.ProductService;
@@ -28,22 +29,26 @@ public class ProductController {
     }
 
     @GetMapping("/{product_id}")
+    @Cacheable(type = Product.class)
     public ProductDto findById(@PathVariable(name = "product_id") Long productId){
         return productService.getById(productId);
     }
 
     @PostMapping
+    @Cacheable(type = Product.class)
     public ProductDto createProduct(@RequestBody ProductDto productDto){
         return productService.createProduct(productDto);
     }
 
     @PutMapping("/{product_id}")
+    @Cacheable(type = Product.class)
     public ProductDto updateProduct(@PathVariable(name = "product_id") Long productId,
                                     @RequestBody ProductDto productDto){
         return productService.updateProduct(productId,productDto);
     }
 
     @DeleteMapping("/{product_id}")
+    @Cacheable(type = Product.class)
     public void deleteProduct(@PathVariable(name = "product_id") Long id) {
         productService.deleteProduct(id);
     }

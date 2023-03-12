@@ -6,12 +6,14 @@ import java.util.Map;
 public class LRUCache<T> implements Cache<T>{
 
     private final int capacity;
+    private final Class<?> type;
     private int size;
     private final Map<Long, Node> hashmap;
     private final DoublyLinkedList internalQueue;
 
-    public LRUCache(final int capacity) {
+    public LRUCache(final int capacity, final Class<?> type) {
         this.capacity = capacity;
+        this.type = type;
         this.hashmap = new HashMap<>();
         this.internalQueue = new DoublyLinkedList();
         this.size = 0;
@@ -28,7 +30,8 @@ public class LRUCache<T> implements Cache<T>{
     }
 
     @Override
-    public void put(final Long key, final T value) {
+    public void put(final Long key, final Object object) {
+        T value = (T) object;
         Node currentNode = hashmap.get(key);
         if(currentNode != null) {
             currentNode.value = value;
@@ -50,6 +53,11 @@ public class LRUCache<T> implements Cache<T>{
     }
 
     @Override
+    public void delete(Long key) {
+        hashmap.remove(key);
+    }
+
+    @Override
     public int getSize() {
         return hashmap.size();
     }
@@ -62,6 +70,11 @@ public class LRUCache<T> implements Cache<T>{
     @Override
     public void clear() {
         hashmap.clear();
+    }
+
+    @Override
+    public boolean support(Class<?> type) {
+        return type.getName().equals(this.type.getName());
     }
 
     private class Node {
