@@ -1,19 +1,15 @@
 package com.example.test_task_clevertec.service.impl;
 
-import com.example.test_task_clevertec.exceptions.BusinessException;
 import com.example.test_task_clevertec.model.dto.ProductReceiptDto;
 import com.example.test_task_clevertec.model.dto.ReceiptResponseDto;
-import com.example.test_task_clevertec.service.ReceiptWriterService;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class ReceiptWriterServiceImpl implements ReceiptWriterService {
+public class StandardReceiptDataGenerator implements ReceiptDataGenerator {
 
     private static final String DOLLAR_SYMBOL = "$";
     private static final String RECEIPT_PATH = "receipt/";
@@ -26,21 +22,7 @@ public class ReceiptWriterServiceImpl implements ReceiptWriterService {
     private static final String SPACE = "    ";
 
     @Override
-    public void write(ReceiptResponseDto receiptResponse) {
-        final List<String> receiptData = generateReceiptData(receiptResponse);
-        final Path rootPath = Path.of(RECEIPT_PATH);
-        try {
-            if (!Files.exists(rootPath)) {
-                Files.createDirectories(rootPath);
-            }
-            final Path receiptPath = Path.of(RECEIPT_PATH + receiptResponse.getReceiptNumber() + ".txt");
-            Files.write(receiptPath, receiptData);
-        } catch (Exception ex) {
-            throw new BusinessException("exception occurred during writing data in receipt");
-        }
-    }
-
-    private List<String> generateReceiptData(ReceiptResponseDto receiptResponse) {
+    public List<String> generateReceiptData(ReceiptResponseDto receiptResponse) {
         final List<String> receiptData = new ArrayList<>();
         String title = QTY_TITLE +
                 getLineBySymbol(SPACE_SYMBOL, SPACE.length()) +
