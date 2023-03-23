@@ -1,31 +1,39 @@
 package com.example.test_task_clevertec.service.impl;
 
-import com.example.test_task_clevertec.service.ProductParser;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.InjectMocks;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 @SpringBootTest
 class ProductParserImplTest {
 
-    @Autowired
-    private ProductParser productParser;
+    @InjectMocks
+    private ProductParserImpl productParser;
 
-    @Test
-    void successfulParse() {
-        List<String> items = List.of("1-5", "2-10", "3-15");
-        Map<Long, Integer> actual = Map.of(1L, 5, 2L, 10, 3L, 15);
-        Map<Long, Integer> result = productParser.parse(items);
-        assertEquals(actual.get(0L),result.get(0L));
-        assertEquals(actual.get(1L),result.get(1L));
-        assertEquals(actual.get(2L),result.get(2L));
+    @ParameterizedTest
+    @MethodSource("provideData")
+    void successfulParse(List<String> items, Map<Long, Integer> result) {
+        Map<Long, Integer> actual = productParser.parse(items);
+        actual.keySet().forEach(id -> assertEquals(result.get(id),result.get(id)));
+    }
+
+    private static Stream<Arguments> provideData() {
+        return Stream.of(
+                Arguments.of(List.of("1-5", "2-10", "3-15"), Map.of(1L, 5, 2L, 10, 3L, 15)),
+                Arguments.of(List.of("1-4","3-5","2-7"), Map.of(1L, 4, 3L, 5, 2L, 7)),
+                Arguments.of(List.of("1-5","3-6","4-8"), Map.of(1L, 5, 3L, 6, 4L, 8)),
+                Arguments.of(List.of("2-2","1-5","3-4"), Map.of(2L, 2, 1L, 5, 3L, 4)),
+                Arguments.of(List.of("1-6","2-4","3-3"), Map.of(1L, 6, 2L, 4, 3L, 3))
+        );
     }
 }

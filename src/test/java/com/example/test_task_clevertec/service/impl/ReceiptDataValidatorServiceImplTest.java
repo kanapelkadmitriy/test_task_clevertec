@@ -1,45 +1,70 @@
 package com.example.test_task_clevertec.service.impl;
 
 import com.example.test_task_clevertec.exceptions.BusinessException;
-import com.example.test_task_clevertec.service.ReceiptDataValidatorService;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.InjectMocks;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
+import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 class ReceiptDataValidatorServiceImplTest {
 
-    @Autowired
-    private ReceiptDataValidatorService receiptDataValidatorService;
+    @InjectMocks
+    private ReceiptDataValidatorServiceImpl receiptDataValidatorService;
 
-    @Test
-    void successfulValidate() {
-        List<String> validItems = List.of("1-6","2-5","3-8");
-        String validCardNumber = "Card-1234";
-        String validCardNumber2 = "CARD-1234";
-        assertDoesNotThrow(() -> receiptDataValidatorService.validate(validItems,validCardNumber));
-        assertDoesNotThrow(() -> receiptDataValidatorService.validate(validItems,validCardNumber2));
+    @ParameterizedTest
+    @MethodSource("provideValidData")
+    void successfulValidate(List<String> items, String cardNumber) {
+        assertDoesNotThrow(() -> receiptDataValidatorService.validate(items,cardNumber));
     }
 
-    @Test
-    void validateWithInvalidItems() {
-        List<String> invalidItems = List.of("ADC-6","2-5","3-8");
-        String validCardNumber2 = "CARD-1234";
-        assertThrows(BusinessException.class, () -> receiptDataValidatorService.validate(invalidItems,validCardNumber2));
+    @ParameterizedTest
+    @MethodSource("provideInvalidItemsData")
+    void validateWithInvalidItems(List<String> invalidItems, String cardNumber) {
+        assertThrows(BusinessException.class, () -> receiptDataValidatorService.validate(invalidItems,cardNumber));
     }
 
-    @Test
-    void validateWithInvalidCardNumber() {
-        List<String> validItems = List.of("1-6","2-5","3-8");
-        String invalidCardNumber = "CARD-124";
-        String invalidCardNumber1 = "CA1D-1234";
-        String invalidCardNumber2 = "CARD_1234";
-        assertThrows(BusinessException.class, () -> receiptDataValidatorService.validate(validItems,invalidCardNumber));
-        assertThrows(BusinessException.class, () -> receiptDataValidatorService.validate(validItems,invalidCardNumber1));
-        assertThrows(BusinessException.class, () -> receiptDataValidatorService.validate(validItems,invalidCardNumber2));
+
+    @ParameterizedTest
+    @MethodSource("provideInvalidCardNumberData")
+    void validateWithInvalidCardNumber(List<String> validItems, String cardNumber) {
+        assertThrows(BusinessException.class, () -> receiptDataValidatorService.validate(validItems,cardNumber));
+    }
+
+    private static Stream<Arguments> provideValidData() {
+        return Stream.of(
+                Arguments.of(List.of("2-3","2-5","3-9"), "CarD-1234"),
+                Arguments.of(List.of("1-4","3-5","3-7"), "card-1234"),
+                Arguments.of(List.of("2-5","2-6","2-8"), "CARD-1234"),
+                Arguments.of(List.of("2-2","1-5","3-4"), "Card-1234"),
+                Arguments.of(List.of("2-6","2-4","3-3"), "CaRd-1234")
+        );
+    }
+
+    private static Stream<Arguments> provideInvalidItemsData() {
+        return Stream.of(
+                Arguments.of(List.of("ADC-6","2-5","3-8"), "Card-1234"),
+                Arguments.of(List.of("1-6","asd-5","3-8"), "Card-1234"),
+                Arguments.of(List.of("!d-6","2-5","3-8"), "Card-1234"),
+                Arguments.of(List.of("ADC-6","2-5","3  -  8"), "Card-1234"),
+                Arguments.of(List.of("/-6","2-5","3-8"), "Card-1234")
+        );
+    }
+
+    private static Stream<Arguments> provideInvalidCardNumberData() {
+        return Stream.of(
+                Arguments.of(List.of("2-3","2-5","3-9"), "Ca4D-1234"),
+                Arguments.of(List.of("1-4","3-5","3-7"), "Card-12a4"),
+                Arguments.of(List.of("2-5","2-6","2-8"), "CAR!-1234"),
+                Arguments.of(List.of("2-2","1-5","3-4"), "Card - 1234"),
+                Arguments.of(List.of("2-6","2-4","3-3"), "Ca45-1234")
+        );
     }
 }
